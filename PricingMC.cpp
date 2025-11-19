@@ -1,17 +1,31 @@
 #include "PricingMC.hpp"
+#include <numeric>      // for std::accumulate
 #include <stdexcept>
 
-PricingMC::PricingMC(const Option& opt,
-                     const Model& mod,
-                     int paths,
-                     int steps,
-                     double spot)
-    : option_(opt), model_(mod), nPaths(paths), nSteps(steps), S0(spot)
-{
-    if (nPaths <= 0) throw std::invalid_argument("nPaths must be > 0");
-    if (nSteps <= 0) throw std::invalid_argument("nSteps must be > 0");
-}
-
 double PricingMC::price() const {
-    // TODO ... 
+    if (nPaths <= 0 || nSteps <= 0) {
+        throw std::invalid_argument("Number of paths and steps must be positive");
+    }
+
+    // Storage for all discounted payoffs
+    std::vector<double> discountedPayoffs;
+    discountedPayoffs.reserve(nPaths);
+
+    for (int i = 0; i < nPaths; ++i) {
+        std::vector<double> path;
+        model_.generatePath(path, S0, option_.T, nSteps);
+
+        // Compute payoff for this path
+        double payoff = option_.payoff(path);
+
+        // Discount the payoff to present value
+        double discounted = payoff * model_.discount(option_.T);
+
+        discountedPayoffs.push_back(discounted);
+    }
+
+    // Compute Monte Carlo estimate (average)
+    double sumPayoffs = std::accumulate(discountedPayoffs.begin(), discountedPayoffs.end(), 0.0);
+
+    return sumPayoffs / nPaths;
 }

@@ -12,5 +12,5 @@ int main() {
     int nPaths = 100000; // Ajuste selon ton CPU
 
     // Modèle
-    // TODO ...
+    
 }

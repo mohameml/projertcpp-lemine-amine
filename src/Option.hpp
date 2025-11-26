@@ -22,118 +22,72 @@ public:
 };
 
 
-// Vanilla Call
-// class CallVanillaOption : public Option {
-// private:
-//     double K_;
-
-// public:
-//     CallVanillaOption(double strike, double maturity)
-//         : Option(maturity), K_(strike) {
-//         if (K_ <= 0.0)
-//             throw std::invalid_argument("Strike must be positive");
-//     }
-
-//     double payoff(const std::vector<double>& path) const override {
-//         if (path.empty())
-//             throw std::invalid_argument("Price path is empty");
-//         // European style payoff depends only on final price
-//         double S_T = path.back();
-//         return std::max(S_T - K_, 0.0);
-//     }
-// };
-
+// ====================== Vanilla Call : ==================== 
 class CallVanillaOption : public Option {
 private:
     double K_;
 
 public:
-    CallVanillaOption(double strike, double maturity)
-        : Option(maturity), K_(strike) {
-        if (K_ <= 0.0)
-            throw std::invalid_argument("Strike must be positive");
-    }
-
+    CallVanillaOption(double strike, double maturity); 
     double payoff(const std::vector<double>& path) const override;
 };
 
-// Vanilla Put
+// ======================== Vanilla Put : =================== 
+
 class PutVanillaOption : public Option {
 private:
     double K_;
 
 public:
-    PutVanillaOption(double strike, double maturity)
-        : Option(maturity), K_(strike) {
-        if (K_ <= 0.0)
-            throw std::invalid_argument("Strike must be positive");
-    }
+    PutVanillaOption(double strike, double maturity) ;
+    double payoff(const std::vector<double>& path) const override;
 
-    double payoff(const std::vector<double>& path) const override {
-        if (path.empty())
-            throw std::invalid_argument("Price path is empty");
-        double S_T = path.back();
-        return std::max(K_ - S_T, 0.0);
-    }
 };
 
 
-// Lookback Call (floating strike: S_T - min_{t} S_t)
+// ============= Lookback Call (S_T - min_{t} S_t)  : ===================
 class LookBackCallOption : public Option {
 public:
-    LookBackCallOption(double maturity) : Option(maturity) {}
+    LookBackCallOption(double maturity); 
 
-    double payoff(const std::vector<double>& path) const override {
-        if (path.empty())
-            throw std::invalid_argument("Price path is empty");
-        double S_T = path.back();
-        double minPrice = *std::min_element(path.begin(), path.end());
-        return std::max(S_T - minPrice, 0.0);
-    }
+    double payoff(const std::vector<double>& path) const override;
 };
 
 
-// Lookback Put (floating strike: max_{t} S_t - S_T)
+// =============== Lookback Put (max_{t} S_t - S_T) : ================
 class LookBackPutOption : public Option {
 public:
-    LookBackPutOption(double maturity) : Option(maturity) {}
-
-    double payoff(const std::vector<double>& path) const override {
-        if (path.empty())
-            throw std::invalid_argument("Price path is empty");
-        double S_T = path.back();
-        double maxPrice = *std::max_element(path.begin(), path.end());
-        return std::max(maxPrice - S_T, 0.0);
-    }
+    LookBackPutOption(double maturity); 
+    double payoff(const std::vector<double>& path) const override; 
 };
 
 // ------ Digital Call --------
-class DigitalCallOption : public Option {
-private:
-    double K_;
-    double payout_;
-public:
-    DigitalCallOption(double strike, double maturity, double payout=1.0)
-        : Option(maturity), K_(strike), payout_(payout) {}
-    double payoff(const std::vector<double>& path) const override {
-        if (path.empty()) throw std::invalid_argument("Path is empty");
-        return (path.back() > K_) ? payout_ : 0.0;
-    }
-};
+// class DigitalCallOption : public Option {
+// private:
+//     double K_;
+//     double payout_;
+// public:
+//     DigitalCallOption(double strike, double maturity, double payout=1.0)
+//         : Option(maturity), K_(strike), payout_(payout) {}
+//     double payoff(const std::vector<double>& path) const override {
+//         if (path.empty()) throw std::invalid_argument("Path is empty");
+//         return (path.back() > K_) ? payout_ : 0.0;
+//     }
+// };
 
-// ------ Digital Put --------
-class DigitalPutOption : public Option {
-private:
-    double K_;
-    double payout_;
-public:
-    DigitalPutOption(double strike, double maturity, double payout=1.0)
-        : Option(maturity), K_(strike), payout_(payout) {}
-    double payoff(const std::vector<double>& path) const override {
-        if (path.empty()) throw std::invalid_argument("Path is empty");
-        return (path.back() < K_) ? payout_ : 0.0;
-    }
-};
+// // ------ Digital Put --------
+// class DigitalPutOption : public Option {
+// private:
+//     double K_;
+//     double payout_;
+// public:
+//     DigitalPutOption(double strike, double maturity, double payout=1.0)
+//         : Option(maturity), K_(strike), payout_(payout) {}
+//     double payoff(const std::vector<double>& path) const override {
+//         if (path.empty()) throw std::invalid_argument("Path is empty");
+//         return (path.back() < K_) ? payout_ : 0.0;
+//     }
+// };
 
 
 // // ------ Asian Call --------

@@ -21,7 +21,11 @@ public:
               double spot = 100.0);
 
     // prix Monte-Carlo standard (estimation simple, non vectorisée)
-    double price() const;
+    double price(double& price , double& demi_ic , double t , std::vector<double>& past) const;
+
+    // compute the delta 
+    double delta(double t , std::vector<double>& past ,double h);
+
 };
 
 #endif 

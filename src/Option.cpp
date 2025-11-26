@@ -4,7 +4,11 @@
 
 // // =================== CallVanillaOption : ================
 CallVanillaOption::CallVanillaOption(double strike, double maturity)
-    : Option(maturity), K_(strike) {}
+    : Option(maturity), K_(strike) {
+        if (K_ <= 0.0)
+            throw std::invalid_argument("Strike must be positive");
+            
+}
 
 double CallVanillaOption::payoff(const std::vector<double>& path) const {
     
@@ -15,43 +19,50 @@ double CallVanillaOption::payoff(const std::vector<double>& path) const {
     return std::max(S_T - K_, 0.0);
 }
 
+
 // // ==================== PutVanillaOption : =================
-// PutVanillaOption::PutVanillaOption(double strike, double maturity)
-//     : Option(maturity), K_(strike) {}
+PutVanillaOption::PutVanillaOption(double strike, double maturity)
+    : Option(maturity), K_(strike) {}
 
-// double PutVanillaOption::payoff(const std::vector<double>& path) const {
-//     if (path.empty()) {
-//         throw std::invalid_argument("Path is empty");
-//     }
-//     double S_T = path.back();
-//     return std::max(K_ - S_T, 0.0);
-// }
+double PutVanillaOption::payoff(const std::vector<double>& path) const {
+    if (path.empty()) {
+        throw std::invalid_argument("Path is empty");
+    }
+    double S_T = path.back();
+    return std::max(K_ - S_T, 0.0);
+}
 
-// // ==================== LookBackCallOption : =================
-// LookBackCallOption::LookBackCallOption(double maturity)
-//     : Option(maturity) {}
+// ==================== LookBackCallOption : =================
+LookBackCallOption::LookBackCallOption(double maturity)
+    : Option(maturity) {}
 
-// double LookBackCallOption::payoff(const std::vector<double>& path) const {
-//     if (path.empty()) {
-//         throw std::invalid_argument("Path is empty");
-//     }
-//     double S_T = path.back();
-//     double minPrice = *std::min_element(path.begin(), path.end());
-//     return std::max(S_T - minPrice, 0.0);
-// }
+double LookBackCallOption::payoff(const std::vector<double>& path) const {
+    if (path.empty()) {
+        throw std::invalid_argument("Path is empty");
+    }
+    double S_T = path.back();
+    double minPrice = *std::min_element(path.begin(), path.end());
 
-// // ==================== LookBackPutOption : =================
-// LookBackPutOption::LookBackPutOption(double maturity)
-//     : Option(maturity) {}
+    // return std::max(S_T - minPrice, 0.0);
+    return S_T  - minPrice;
+}
 
-// double LookBackPutOption::payoff(const std::vector<double>& path) const {
-//     if (path.empty()) {
-//         throw std::invalid_argument("Path is empty");
-//     }
-//     double S_T = path.back();
-//     double maxPrice = *std::max_element(path.begin(), path.end());
-//     return std::max(maxPrice - S_T, 0.0);
-// }
+// ==================== LookBackPutOption : =================
+LookBackPutOption::LookBackPutOption(double maturity)
+    : Option(maturity) {}
+
+double LookBackPutOption::payoff(const std::vector<double>& path) const {
+    if (path.empty()) {
+        throw std::invalid_argument("Path is empty");
+    }
+    double S_T = path.back();
+    double maxPrice = *std::max_element(path.begin(), path.end());
+
+    return maxPrice - S_T ;
+    // return std::max(maxPrice - S_T, 0.0);
+}
+
+
 
 // // // Digital Call Option
 // // class DigitalCallOption : public Option {
@@ -181,3 +192,4 @@ double CallVanillaOption::payoff(const std::vector<double>& path) const {
 // //         return maxPayoff;
 // //     }
 // // };
+

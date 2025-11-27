@@ -53,7 +53,7 @@ int main() {
     // compute the price and the demi_ic : 
     double price ;
     double demi_ic;
-    std::vector<double> past ; 
+    std::vector<double> past; 
     mc.price(price , demi_ic , t , past);
 
     double delta = mc.delta(t , past , h);
@@ -68,3 +68,42 @@ int main() {
     std::cout << "delta of option is :" << delta_bs <<  std::endl;
 
 }
+
+// int main() {
+//     std::string json_input = R"(
+//     {
+//         "date": 0,
+//         "model_type": "black_scholes",
+//         "option_type": "call_vanille",
+//         "spot": 100.0,
+//         "strike": 100.0,
+//         "interest_rate": 0.02,
+//         "volatility": 0.25,
+//         "maturity": 1.0,
+//         "number_of_steps": 252,
+//         "number_of_paths": 100000,
+//         "shift": 0.01
+//     }
+//     )";
+
+//     PricingInput input = parseJson(json_input);
+
+//     // Instanciation des objets
+//     CallVanillaOption option(input.strike, input.maturity);
+//     BSModel model(input.interest_rate, input.volatility);
+//     PricingMC mc(option, model, input.number_of_paths, input.number_of_steps, input.spot);
+
+//     // Price + demi_ic
+//     double price, demi_ic;
+//     std::vector<double> past;
+//     double t = 0.0;
+//     mc.price(price, demi_ic, t, past);
+
+//     // Delta
+//     double delta = mc.delta(t, past, input.shift);
+
+//     std::cout << "Price: " << price << ", demi_ic: " << demi_ic << "\n";
+//     std::cout << "Delta: " << delta << std::endl;
+
+//     return 0;
+// }

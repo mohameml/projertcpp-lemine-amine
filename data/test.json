@@ -1,0 +1,16 @@
+{
+    "date": 0,
+    "past": [
+        100.0
+    ],
+    "model_type": "black_scholes",
+    "option_type": "call_vanille",
+    "spot": 100.0,
+    "strike": 100.0,
+    "interest_rate": 0.02,
+    "volatility": 0.25,
+    "maturity": 1.0,
+    "number_of_steps": 252,
+    "number_of_paths": 100000,
+    "delta_shift": 0.01
+}

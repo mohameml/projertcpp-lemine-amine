@@ -2,6 +2,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include "utils.hpp"
 
 // -------------------- BSModel --------------------
 
@@ -20,24 +21,50 @@ BSModel::BSModel(double r, double sigma , uint64_t seed )
 void BSModel::generatePath(std::vector<double>& path,
                            double S0,
                            double T,
-                           int nSteps) const
+                           int nSteps, 
+                           double t, 
+                        const std::vector<double>&   past) const
 {
-    if (nSteps <= 0) {
-        throw std::invalid_argument("nSteps must be positive");
-    }
-    if (S0 <= 0.0) {
-        throw std::invalid_argument("Initial price S0 must be positive");
-    }
+
     path.resize(nSteps + 1);
-    path[0] = S0;
 
-    double dt = T / nSteps;
-    double drift = (r_ - 0.5 * sigma_ * sigma_) * dt;
-    double diffusion_coefficient = sigma_ * std::sqrt(dt);
+    int n_past = past.size();
+    if (n_past > 1) {
+        for (int i = 0; i < n_past; i++)
+        {
+            path[i] = past[i];
+        }
+    } else {
+        path[0] = S0;
+        n_past = 1 ;
+    }
 
-    for (int i = 1; i <= nSteps; ++i) {
+
+    double dt_reg = T / nSteps;
+    int index_k = compute_last_index(t , T , nSteps);
+    double S_t = past.empty() ? S0 : past.back();
+
+    // if t = T , we don't need simulation 
+    if (index_k == nSteps ) return; 
+
+    // we have two diff steps :
+    //      - step1 : simulate the S_{k+1} with the step = t_{k+1} - t 
+    //      - step2 : simulate S_{j} j >= k+2 with the normal step = T / N 
+    double t_k_plus_1 = (index_k + 1)*dt_reg;
+    double dt_frac = t_k_plus_1 - t ;
+    {
         double Z = rng_.normal();
-        path[i] = path[i-1] * std::exp(drift + diffusion_coefficient * Z);
+        double drift = (r_ - 0.5*sigma_*sigma_)*dt_frac;
+        double diff = sigma_*std::sqrt(dt_frac);
+        path[index_k+1] = S_t*std::exp(drift + diff*Z);
+    }
+
+
+    double drift = (r_ - 0.5 * sigma_ * sigma_) * dt_reg;
+    double diff = sigma_ * std::sqrt(dt_reg);
+    for (int i = index_k+2; i <= nSteps; ++i) {
+        double Z = rng_.normal();
+        path[i] = path[i-1] * std::exp(drift + diff * Z);
     }
 }
 

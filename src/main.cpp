@@ -18,12 +18,13 @@ std::pair<double ,double> blackScholesCall(
     double K,     // strike
     double r,     // taux sans risque
     double sigma, // volatilité
-    double T      // maturité
+    double T   ,   // maturité
+    double t  
 ) {
-    double d1 = (std::log(S/K) + (r + 0.5*sigma*sigma)*T) / (sigma * std::sqrt(T));
-    double d2 = d1 - sigma * std::sqrt(T);
+    double d1 = (std::log(S/K) + (r + 0.5*sigma*sigma)*(T - t)) / (sigma * std::sqrt(T - t));
+    double d2 = d1 - sigma * std::sqrt(T - t);
 
-    double price = S * N(d1) - K * std::exp(-r*T) * N(d2);
+    double price = S * N(d1) - K * std::exp(-r*(T - t)) * N(d2);
 
     double delta = N(d1);
 
@@ -62,13 +63,8 @@ int main() {
     
 
     // Test : 
-    auto [price_bs , delta_bs] = blackScholesCall(S0, K, r, sigma, T);
-    std::cout << "The price of the call option with BS Model is"  <<  price_bs <<  std::endl;
+    auto [price_bs , delta_bs] = blackScholesCall(S0, K, r, sigma, T , t);
+    std::cout << "The price of the call option with BS Model is "  <<  price_bs <<  std::endl;
     std::cout << "delta of option is :" << delta_bs <<  std::endl;
 
-
-
-
-
-    
 }

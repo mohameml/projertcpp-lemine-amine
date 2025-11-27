@@ -19,7 +19,9 @@ public:
     virtual void generatePath(std::vector<double>& path,
                               double S0,
                               double T,
-                              int nSteps) const = 0;
+                              int nSteps , 
+                              double t , 
+                            const std::vector<double>&  past) const = 0;
 
     // discount factor e^{-r T}
     virtual double discount(double T) const = 0;
@@ -45,7 +47,10 @@ public:
     void generatePath(std::vector<double>& path,
                       double S0,
                       double T,
-                      int nSteps) const override;
+                      int nSteps, 
+                      double t , 
+                    const std::vector<double>&  past) const override;
+
 
     double discount(double T) const override {
         return std::exp(-r_ * T);
@@ -53,6 +58,8 @@ public:
 };
 
 
+
+#endif 
 
 // class BinomialModel : public Model {
 // private:
@@ -149,5 +156,3 @@ public:
 //     }
 // }
 // };
-
-#endif

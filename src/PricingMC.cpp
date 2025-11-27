@@ -20,7 +20,7 @@ double PricingMC::price(double& price , double& demi_ic , double t , std::vector
 
     std::vector<double> path;
     for (int i = 0; i < nPaths; ++i) {
-        model_.generatePath(path, S0, option_.T, nSteps);
+        model_.generatePath(path, S0, option_.T, nSteps , t, past);
         double payoff = option_.payoff(path);
         double discounted = payoff * model_.discount(option_.T);
 
